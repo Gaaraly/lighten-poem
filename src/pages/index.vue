@@ -3,13 +3,18 @@ defineOptions({
   name: 'IndexPage',
 })
 
-const poem = $ref('欲买桂花同载酒，终不似，少年游')
-const reference = $ref('《唐多令 · 芦叶满汀洲》')
-
 let isCopyDone = $ref(false)
 
+const api = 'https://v1.hitokoto.cn'
+const urlParams = new URLSearchParams({
+  c: 'i',
+  encode: 'json',
+})
+
+const { data, execute } = useFetch(`${api}?${urlParams}`).get().json()
+
 function onClick() {
-  navigator.clipboard.writeText(poem)
+  navigator.clipboard.writeText(data.value.hitokoto)
 
   if (!isCopyDone) {
     isCopyDone = true
@@ -18,6 +23,8 @@ function onClick() {
     }, 1800)
   }
 }
+
+document.addEventListener('wheel', () => console.log('asd'))
 </script>
 
 <template>
@@ -37,7 +44,7 @@ function onClick() {
                 text-shadow font-bold
                 class="sentence"
               >
-                {{ poem }}
+                {{ data?.hitokoto }}
               </span>
             </TheSentence>
           </div>
@@ -51,7 +58,7 @@ function onClick() {
 
       <div lg:text-6 text-4 class="text-amber/70">
         <TheSentence>
-          <span tracking-widest class="sentence">{{ reference }}</span>
+          <span tracking-widest class="sentence">{{ `《${data?.from ?? ''}》` }}</span>
         </TheSentence>
       </div>
     </div>
